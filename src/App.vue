@@ -12,10 +12,55 @@
           <span>Past Orders</span>
       </router-link>
     </nav>
-    <!-- <a @click="toggleSidebar" class="top-bar-cart-link">
+    <div @click="toggleSidebar" class="top-bar-cart-link">
         <i class="icofont-cart-alt icofont-1x"></i>
         <span>Cart ({{ totalQuantity }})</span>
-    </a> -->
+    </div>
   </header>
-  <router-view/>
+  <router-view :inventory="inventory" :addToCart="addToCart"/>
+
+  <SidebarComponent
+    v-if="showSidebar"
+    :toggle="toggleSidebar"
+    :cart="cart"
+    :inventory="inventory"
+    :remove="removeItem"
+  />
 </template>
+
+<script>
+import SidebarComponent from '@/components/SidebarComponent.vue'
+import food from './food.json'
+
+export default {
+  components: {
+    SidebarComponent
+  },
+  data () {
+    return {
+      showSidebar: false,
+      inventory: food,
+      cart: {}
+    }
+  },
+  computed: {
+    totalQuantity () {
+      return Object.values(this.cart).reduce((acc, curr) => {
+        return acc + curr
+      }, 0)
+    }
+  },
+  methods: {
+    addToCart (name, quantity) {
+      if (!this.cart[name]) this.cart[name] = 0
+      this.cart[name] += quantity
+    },
+    toggleSidebar () {
+      this.showSidebar = !this.showSidebar
+    },
+    removeItem (name) {
+      delete this.cart[name]
+    }
+  }
+}
+</script>
